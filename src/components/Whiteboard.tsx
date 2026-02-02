@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
-import { Canvas as FabricCanvas } from 'fabric';
+import { fabric } from 'fabric';
 import { useCanvas } from '../context/CanvasContext';
 import { useCanvasEvents } from '../hooks/useCanvasEvents';
 import { usePlacementMode } from '../hooks/usePlacementMode';
@@ -14,7 +14,7 @@ import { expandCanvasIfNeeded } from '../utils/infiniteCanvas';
 export interface WhiteboardProps {
   className?: string;
   style?: React.CSSProperties;
-  onReady?: (canvas: FabricCanvas) => void;
+  onReady?: (canvas: fabric.Canvas) => void;
 }
 
 export function Whiteboard({
@@ -23,9 +23,9 @@ export function Whiteboard({
   onReady,
 }: WhiteboardProps) {
   const canvasElementRef = useRef<HTMLCanvasElement>(null);
-  const fabricCanvasRef = useRef<FabricCanvas | null>(null);
+  const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
+  const [fabricCanvas, setFabricCanvas] = useState<fabric.Canvas | null>(null);
   const { canvasRef, viewport, gridConfig } = useCanvas();
   const { placementShape, activeTool } = useInteractionStore();
 
@@ -33,7 +33,7 @@ export function Whiteboard({
   useEffect(() => {
     if (!canvasElementRef.current || fabricCanvasRef.current) return;
 
-    const fabricCanvas = new FabricCanvas(canvasElementRef.current, {
+    const fabricCanvas = new fabric.Canvas(canvasElementRef.current, {
       width: 800,
       height: 600,
       backgroundColor: '#f5f5f5',

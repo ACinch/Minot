@@ -7,7 +7,7 @@ import {
   useEffect,
   type ReactNode,
 } from 'react';
-import { Canvas as FabricCanvas } from 'fabric';
+import { fabric } from 'fabric';
 import type { CanvasContextValue, CanvasData, ComponentCatalog, ShapeData, ViewportState, GridConfig } from '../types';
 import { DEFAULT_VIEWPORT, DEFAULT_GRID_CONFIG } from '../types';
 import { shapeToData, dataToShape } from '../shapes/serialization';
@@ -36,7 +36,7 @@ export function CanvasProvider({
   initialViewport,
 }: CanvasProviderProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [canvas, setCanvas] = useState<FabricCanvas | null>(null);
+  const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const dimensionsRef = useRef({ width, height, backgroundColor });
   const [viewport, setViewportState] = useState<ViewportState>({
     ...DEFAULT_VIEWPORT,
@@ -54,7 +54,7 @@ export function CanvasProvider({
 
   // Initialize Fabric canvas
   const initializeCanvas = useCallback((canvasElement: HTMLCanvasElement) => {
-    const fabricCanvas = new FabricCanvas(canvasElement, {
+    const fabricCanvas = new fabric.Canvas(canvasElement, {
       width: dimensionsRef.current.width,
       height: dimensionsRef.current.height,
       backgroundColor: dimensionsRef.current.backgroundColor,

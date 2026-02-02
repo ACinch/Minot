@@ -1,4 +1,4 @@
-import { Canvas as FabricCanvas, Object as FabricObject } from 'fabric';
+import { fabric } from 'fabric';
 
 const EXPAND_MARGIN = 100; // Pixels from edge to trigger expansion
 const EXPAND_AMOUNT = 200; // How much to expand by
@@ -13,7 +13,7 @@ export interface CanvasBounds {
 /**
  * Calculate the bounding box of all objects on the canvas
  */
-export function getContentBounds(canvas: FabricCanvas): CanvasBounds | null {
+export function getContentBounds(canvas: fabric.Canvas): CanvasBounds | null {
   const objects = canvas.getObjects().filter(
     (obj) => !(obj as typeof obj & { gridLine?: boolean }).gridLine
   );
@@ -41,7 +41,7 @@ export function getContentBounds(canvas: FabricCanvas): CanvasBounds | null {
  * Returns new dimensions if expansion needed, null otherwise
  */
 export function checkCanvasExpansion(
-  canvas: FabricCanvas,
+  canvas: fabric.Canvas,
   margin: number = EXPAND_MARGIN,
   expandAmount: number = EXPAND_AMOUNT
 ): { width: number; height: number } | null {
@@ -74,7 +74,7 @@ export function checkCanvasExpansion(
  * Expand the canvas if objects are near the edges
  */
 export function expandCanvasIfNeeded(
-  canvas: FabricCanvas,
+  canvas: fabric.Canvas,
   margin?: number,
   expandAmount?: number
 ): boolean {
@@ -94,7 +94,7 @@ export function expandCanvasIfNeeded(
  * Fit the canvas size to its content with optional padding
  */
 export function fitCanvasToContent(
-  canvas: FabricCanvas,
+  canvas: fabric.Canvas,
   padding: number = 50,
   minWidth: number = 400,
   minHeight: number = 300

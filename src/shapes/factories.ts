@@ -1,4 +1,4 @@
-import { Rect, Circle, Triangle, Line, IText, Canvas as FabricCanvas } from 'fabric';
+import { fabric } from 'fabric';
 import type { ShapeStyles, ShapeType } from '../types';
 import { DEFAULT_STYLES } from '../types';
 import { createArrow } from './arrow';
@@ -16,12 +16,12 @@ export interface CreateShapeOptions {
 
 // Factory functions for creating shapes with consistent defaults
 export function createRectangle(
-  canvas: FabricCanvas,
+  canvas: fabric.Canvas,
   options: CreateShapeOptions = {}
 ) {
   const styles = { ...DEFAULT_STYLES, ...options.styles };
 
-  const rect = new Rect({
+  const rect = new fabric.Rect({
     left: options.left ?? 100,
     top: options.top ?? 100,
     width: options.width ?? 100,
@@ -31,8 +31,8 @@ export function createRectangle(
     strokeWidth: styles.borderWidth,
   });
 
-  (rect as Rect & { id: string }).id = generateShapeId();
-  (rect as Rect & { shapeType: ShapeType }).shapeType = 'rectangle';
+  (rect as fabric.Rect & { id: string }).id = generateShapeId();
+  (rect as fabric.Rect & { shapeType: ShapeType }).shapeType = 'rectangle';
 
   canvas.add(rect);
   canvas.setActiveObject(rect);
@@ -42,12 +42,12 @@ export function createRectangle(
 }
 
 export function createCircle(
-  canvas: FabricCanvas,
+  canvas: fabric.Canvas,
   options: CreateShapeOptions = {}
 ) {
   const styles = { ...DEFAULT_STYLES, ...options.styles };
 
-  const circle = new Circle({
+  const circle = new fabric.Circle({
     left: options.left ?? 100,
     top: options.top ?? 100,
     radius: options.radius ?? 50,
@@ -56,8 +56,8 @@ export function createCircle(
     strokeWidth: styles.borderWidth,
   });
 
-  (circle as Circle & { id: string }).id = generateShapeId();
-  (circle as Circle & { shapeType: ShapeType }).shapeType = 'circle';
+  (circle as fabric.Circle & { id: string }).id = generateShapeId();
+  (circle as fabric.Circle & { shapeType: ShapeType }).shapeType = 'circle';
 
   canvas.add(circle);
   canvas.setActiveObject(circle);
@@ -67,12 +67,12 @@ export function createCircle(
 }
 
 export function createTriangle(
-  canvas: FabricCanvas,
+  canvas: fabric.Canvas,
   options: CreateShapeOptions = {}
 ) {
   const styles = { ...DEFAULT_STYLES, ...options.styles };
 
-  const triangle = new Triangle({
+  const triangle = new fabric.Triangle({
     left: options.left ?? 100,
     top: options.top ?? 100,
     width: options.width ?? 100,
@@ -82,8 +82,8 @@ export function createTriangle(
     strokeWidth: styles.borderWidth,
   });
 
-  (triangle as Triangle & { id: string }).id = generateShapeId();
-  (triangle as Triangle & { shapeType: ShapeType }).shapeType = 'triangle';
+  (triangle as fabric.Triangle & { id: string }).id = generateShapeId();
+  (triangle as fabric.Triangle & { shapeType: ShapeType }).shapeType = 'triangle';
 
   canvas.add(triangle);
   canvas.setActiveObject(triangle);
@@ -93,7 +93,7 @@ export function createTriangle(
 }
 
 export function createLine(
-  canvas: FabricCanvas,
+  canvas: fabric.Canvas,
   x1: number,
   y1: number,
   x2: number,
@@ -102,13 +102,13 @@ export function createLine(
 ) {
   const styles = { ...DEFAULT_STYLES, ...options.styles };
 
-  const line = new Line([x1, y1, x2, y2], {
+  const line = new fabric.Line([x1, y1, x2, y2], {
     stroke: styles.borderColor,
     strokeWidth: styles.borderWidth,
   });
 
-  (line as Line & { id: string }).id = generateShapeId();
-  (line as Line & { shapeType: ShapeType }).shapeType = 'line';
+  (line as fabric.Line & { id: string }).id = generateShapeId();
+  (line as fabric.Line & { shapeType: ShapeType }).shapeType = 'line';
 
   canvas.add(line);
   canvas.setActiveObject(line);
@@ -118,7 +118,7 @@ export function createLine(
 }
 
 export function createArrowShape(
-  canvas: FabricCanvas,
+  canvas: fabric.Canvas,
   x1: number,
   y1: number,
   x2: number,
@@ -138,12 +138,12 @@ export function createArrowShape(
 }
 
 export function createText(
-  canvas: FabricCanvas,
+  canvas: fabric.Canvas,
   options: CreateShapeOptions = {}
 ) {
   const styles = { ...DEFAULT_STYLES, ...options.styles };
 
-  const text = new IText(options.text ?? 'Text', {
+  const text = new fabric.IText(options.text ?? 'Text', {
     left: options.left ?? 100,
     top: options.top ?? 100,
     fontFamily: styles.fontFamily,
@@ -151,8 +151,8 @@ export function createText(
     fill: styles.fontColor,
   });
 
-  (text as IText & { id: string }).id = generateShapeId();
-  (text as IText & { shapeType: ShapeType }).shapeType = 'text';
+  (text as fabric.IText & { id: string }).id = generateShapeId();
+  (text as fabric.IText & { shapeType: ShapeType }).shapeType = 'text';
 
   canvas.add(text);
   canvas.setActiveObject(text);

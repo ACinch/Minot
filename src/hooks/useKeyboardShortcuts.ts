@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { Canvas as FabricCanvas, Object as FabricObject, ActiveSelection } from 'fabric';
+import { fabric } from 'fabric';
 import { useInteractionStore } from '../store/interactionStore';
 import { useHistory } from './useHistory';
 import { generateShapeId } from '../shapes/serialization';
@@ -8,7 +8,7 @@ import { SHAPE_CONSTRAINTS } from '../types';
 /**
  * Handles keyboard shortcuts for canvas operations
  */
-export function useKeyboardShortcuts(canvas: FabricCanvas | null) {
+export function useKeyboardShortcuts(canvas: fabric.Canvas | null) {
   const { selectedIds, setSelectedIds } = useInteractionStore();
   const { undo, redo, canUndo, canRedo } = useHistory();
 
@@ -19,7 +19,7 @@ export function useKeyboardShortcuts(canvas: FabricCanvas | null) {
     const activeObject = canvas.getActiveObject();
     if (!activeObject) return;
 
-    if (activeObject instanceof ActiveSelection) {
+    if (activeObject instanceof fabric.ActiveSelection) {
       activeObject.forEachObject((obj) => canvas.remove(obj));
     } else {
       canvas.remove(activeObject);
@@ -39,16 +39,16 @@ export function useKeyboardShortcuts(canvas: FabricCanvas | null) {
 
     const offset = 20;
 
-    if (activeObject instanceof ActiveSelection) {
-      const clonedObjects: FabricObject[] = [];
+    if (activeObject instanceof fabric.ActiveSelection) {
+      const clonedObjects: fabric.Object[] = [];
 
       activeObject.forEachObject((obj) => {
-        obj.clone((cloned: FabricObject) => {
+        obj.clone((cloned: fabric.Object) => {
           cloned.set({
             left: (cloned.left || 0) + offset,
             top: (cloned.top || 0) + offset,
           });
-          (cloned as FabricObject & { id: string }).id = generateShapeId();
+          (cloned as fabric.Object & { id: string }).id = generateShapeId();
           canvas.add(cloned);
           clonedObjects.push(cloned);
         });
@@ -58,21 +58,21 @@ export function useKeyboardShortcuts(canvas: FabricCanvas | null) {
 
       // Select the cloned objects
       if (clonedObjects.length > 0) {
-        const selection = new ActiveSelection(clonedObjects, { canvas });
+        const selection = new fabric.ActiveSelection(clonedObjects, { canvas });
         canvas.setActiveObject(selection);
         const ids = clonedObjects.map(
-          (obj) => (obj as FabricObject & { id?: string }).id
+          (obj) => (obj as fabric.Object & { id?: string }).id
         ).filter(Boolean) as string[];
         setSelectedIds(ids);
       }
     } else {
-      activeObject.clone((cloned: FabricObject) => {
+      activeObject.clone((cloned: fabric.Object) => {
         cloned.set({
           left: (cloned.left || 0) + offset,
           top: (cloned.top || 0) + offset,
         });
         const id = generateShapeId();
-        (cloned as FabricObject & { id: string }).id = id;
+        (cloned as fabric.Object & { id: string }).id = id;
         canvas.add(cloned);
         canvas.setActiveObject(cloned);
         setSelectedIds([id]);
@@ -109,7 +109,7 @@ export function useKeyboardShortcuts(canvas: FabricCanvas | null) {
 
       // Also skip if editing text on canvas
       const activeObject = canvas.getActiveObject();
-      if (activeObject && (activeObject as FabricObject & { isEditing?: boolean }).isEditing) {
+      if (activeObject && (activeObject as fabric.Object & { isEditing?: boolean }).isEditing) {
         return;
       }
 

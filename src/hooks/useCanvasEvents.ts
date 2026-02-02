@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import type { Canvas as FabricCanvas, Object as FabricObject } from 'fabric';
+import { fabric } from 'fabric';
 import { useInteractionStore } from '../store/interactionStore';
 import { useCanvas } from '../context/CanvasContext';
 import { shapeToData } from '../shapes/serialization';
@@ -14,10 +14,10 @@ export function useCanvasEvents() {
 
   // Handle selection changes
   const handleSelectionCreated = useCallback(
-    (e: { selected?: FabricObject[] }) => {
+    (e: { selected?: fabric.Object[] }) => {
       if (e.selected) {
         const ids = e.selected.map(
-          (obj) => (obj as FabricObject & { id?: string }).id || ''
+          (obj) => (obj as fabric.Object & { id?: string }).id || ''
         ).filter(Boolean);
         setSelectedIds(ids);
       }
@@ -26,10 +26,10 @@ export function useCanvasEvents() {
   );
 
   const handleSelectionUpdated = useCallback(
-    (e: { selected?: FabricObject[] }) => {
+    (e: { selected?: fabric.Object[] }) => {
       if (e.selected) {
         const ids = e.selected.map(
-          (obj) => (obj as FabricObject & { id?: string }).id || ''
+          (obj) => (obj as fabric.Object & { id?: string }).id || ''
         ).filter(Boolean);
         setSelectedIds(ids);
       }
@@ -43,7 +43,7 @@ export function useCanvasEvents() {
 
   // Handle object modifications for history
   const handleObjectModified = useCallback(
-    (e: { target?: FabricObject }) => {
+    (e: { target?: fabric.Object }) => {
       if (!canvas || !e.target) return;
 
       // Create history entry
@@ -60,7 +60,7 @@ export function useCanvasEvents() {
 
   // Handle object added
   const handleObjectAdded = useCallback(
-    (e: { target?: FabricObject }) => {
+    (e: { target?: fabric.Object }) => {
       if (!canvas || !e.target) return;
 
       const canvasJson = JSON.stringify(canvas.toJSON());
@@ -76,7 +76,7 @@ export function useCanvasEvents() {
 
   // Handle object removed
   const handleObjectRemoved = useCallback(
-    (e: { target?: FabricObject }) => {
+    (e: { target?: fabric.Object }) => {
       if (!canvas || !e.target) return;
 
       const canvasJson = JSON.stringify(canvas.toJSON());

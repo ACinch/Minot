@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { Canvas as FabricCanvas, Object as FabricObject, ActiveSelection } from 'fabric';
+import { fabric } from 'fabric';
 import { useCanvas } from '../context/CanvasContext';
 import { useInteractionStore } from '../store/interactionStore';
 import { snapToGrid } from '../utils/grid';
@@ -8,7 +8,7 @@ import { SHAPE_CONSTRAINTS, SELECTION_STYLE } from '../types';
 /**
  * Configures shape interaction behaviors on the canvas
  */
-export function useShapeInteractions(canvas: FabricCanvas | null) {
+export function useShapeInteractions(canvas: fabric.Canvas | null) {
   const { gridConfig } = useCanvas();
   const { setSelectedIds } = useInteractionStore();
 
@@ -17,12 +17,12 @@ export function useShapeInteractions(canvas: FabricCanvas | null) {
     if (!canvas) return;
 
     // Set default control visibility for all objects
-    FabricObject.prototype.setControlsVisibility({
+    fabric.Object.prototype.setControlsVisibility({
       mtr: false, // Disable rotation control
     });
 
     // Set default styling
-    FabricObject.prototype.set({
+    fabric.Object.prototype.set({
       borderColor: SELECTION_STYLE.borderColor,
       cornerColor: SELECTION_STYLE.cornerColor,
       cornerStyle: SELECTION_STYLE.cornerStyle,
@@ -32,7 +32,7 @@ export function useShapeInteractions(canvas: FabricCanvas | null) {
     });
 
     // Set minimum scale constraints
-    FabricObject.prototype.minScaleLimit = 0.1;
+    fabric.Object.prototype.minScaleLimit = 0.1;
 
   }, [canvas]);
 
@@ -55,14 +55,14 @@ export function useShapeInteractions(canvas: FabricCanvas | null) {
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
 
-    const handleScalingStart = (e: { target?: FabricObject }) => {
+    const handleScalingStart = (e: { target?: fabric.Object }) => {
       if (e.target) {
         originalScaleX = e.target.scaleX || 1;
         originalScaleY = e.target.scaleY || 1;
       }
     };
 
-    const handleScaling = (e: { target?: FabricObject; transform?: { corner: string } }) => {
+    const handleScaling = (e: { target?: fabric.Object; transform?: { corner: string } }) => {
       const obj = e.target;
       if (!obj) return;
 
@@ -108,7 +108,7 @@ export function useShapeInteractions(canvas: FabricCanvas | null) {
   useEffect(() => {
     if (!canvas) return;
 
-    const handleMoving = (e: { target?: FabricObject }) => {
+    const handleMoving = (e: { target?: fabric.Object }) => {
       if (!gridConfig.snapToGrid || !e.target) return;
 
       const obj = e.target;
@@ -118,7 +118,7 @@ export function useShapeInteractions(canvas: FabricCanvas | null) {
       });
     };
 
-    const handleScalingSnap = (e: { target?: FabricObject }) => {
+    const handleScalingSnap = (e: { target?: fabric.Object }) => {
       if (!gridConfig.snapToGrid || !e.target) return;
 
       const obj = e.target;
@@ -157,13 +157,13 @@ export function useShapeInteractions(canvas: FabricCanvas | null) {
         return;
       }
 
-      if (activeObject instanceof ActiveSelection) {
+      if (activeObject instanceof fabric.ActiveSelection) {
         const ids = activeObject.getObjects().map(
-          (obj) => (obj as FabricObject & { id?: string }).id
+          (obj) => (obj as fabric.Object & { id?: string }).id
         ).filter(Boolean) as string[];
         setSelectedIds(ids);
       } else {
-        const id = (activeObject as FabricObject & { id?: string }).id;
+        const id = (activeObject as fabric.Object & { id?: string }).id;
         setSelectedIds(id ? [id] : []);
       }
     };

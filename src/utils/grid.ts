@@ -1,4 +1,4 @@
-import { Canvas as FabricCanvas, Line } from 'fabric';
+import { fabric } from 'fabric';
 import type { GridConfig } from '../types';
 
 const GRID_LINE_GROUP_ID = '__grid_lines__';
@@ -8,7 +8,7 @@ const GRID_LINE_GROUP_ID = '__grid_lines__';
  * Grid lines are non-selectable and always behind other objects
  */
 export function renderGrid(
-  canvas: FabricCanvas,
+  canvas: fabric.Canvas,
   config: GridConfig,
   canvasWidth: number,
   canvasHeight: number
@@ -22,38 +22,38 @@ export function renderGrid(
   }
 
   const { size, color } = config;
-  const lines: Line[] = [];
+  const lines: fabric.Line[] = [];
 
   // Vertical lines
   for (let x = 0; x <= canvasWidth; x += size) {
-    const line = new Line([x, 0, x, canvasHeight], {
+    const line = new fabric.Line([x, 0, x, canvasHeight], {
       stroke: color,
       strokeWidth: 1,
       selectable: false,
       evented: false,
       excludeFromExport: true,
     });
-    (line as Line & { gridLine: boolean }).gridLine = true;
+    (line as fabric.Line & { gridLine: boolean }).gridLine = true;
     lines.push(line);
   }
 
   // Horizontal lines
   for (let y = 0; y <= canvasHeight; y += size) {
-    const line = new Line([0, y, canvasWidth, y], {
+    const line = new fabric.Line([0, y, canvasWidth, y], {
       stroke: color,
       strokeWidth: 1,
       selectable: false,
       evented: false,
       excludeFromExport: true,
     });
-    (line as Line & { gridLine: boolean }).gridLine = true;
+    (line as fabric.Line & { gridLine: boolean }).gridLine = true;
     lines.push(line);
   }
 
   // Add all lines and send to back
   lines.forEach((line) => {
     canvas.add(line);
-    canvas.sendObjectToBack(line);
+    canvas.sendToBack(line);
   });
 
   canvas.renderAll();
@@ -62,7 +62,7 @@ export function renderGrid(
 /**
  * Removes all grid lines from the canvas
  */
-export function clearGrid(canvas: FabricCanvas): void {
+export function clearGrid(canvas: fabric.Canvas): void {
   const gridLines = canvas.getObjects().filter(
     (obj) => (obj as typeof obj & { gridLine?: boolean }).gridLine === true
   );

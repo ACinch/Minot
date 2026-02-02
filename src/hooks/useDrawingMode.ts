@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { Canvas as FabricCanvas, Line, Object as FabricObject } from 'fabric';
+import { fabric } from 'fabric';
 import { useInteractionStore } from '../store/interactionStore';
 import { createArrow } from '../shapes/arrow';
 import { generateShapeId } from '../shapes/serialization';
@@ -11,17 +11,17 @@ const GHOST_OPACITY = 0.25;
 /**
  * Hook to handle click-drag drawing of lines and arrows
  */
-export function useDrawingMode(canvas: FabricCanvas | null) {
+export function useDrawingMode(canvas: fabric.Canvas | null) {
   const { activeTool, currentStyles, setIsDrawing, isDrawing, setSelectedIds } = useInteractionStore();
 
   const isDrawingRef = useRef(false);
   const startPointRef = useRef<{ x: number; y: number } | null>(null);
-  const previewShapeRef = useRef<FabricObject | null>(null);
+  const previewShapeRef = useRef<fabric.Object | null>(null);
 
   const isLineMode = activeTool === 'line' || activeTool === 'arrow';
 
   // Create preview shape
-  const createPreview = useCallback((x1: number, y1: number, x2: number, y2: number): FabricObject => {
+  const createPreview = useCallback((x1: number, y1: number, x2: number, y2: number): fabric.Object => {
     if (activeTool === 'arrow') {
       const arrow = createArrow(x1, y1, x2, y2, {
         borderColor: currentStyles.borderColor,
@@ -34,7 +34,7 @@ export function useDrawingMode(canvas: FabricCanvas | null) {
       });
       return arrow;
     } else {
-      return new Line([x1, y1, x2, y2], {
+      return new fabric.Line([x1, y1, x2, y2], {
         stroke: currentStyles.borderColor,
         strokeWidth: currentStyles.borderWidth,
         opacity: GHOST_OPACITY,
@@ -45,8 +45,8 @@ export function useDrawingMode(canvas: FabricCanvas | null) {
   }, [activeTool, currentStyles]);
 
   // Create final shape
-  const createFinalShape = useCallback((x1: number, y1: number, x2: number, y2: number): FabricObject => {
-    let shape: FabricObject;
+  const createFinalShape = useCallback((x1: number, y1: number, x2: number, y2: number): fabric.Object => {
+    let shape: fabric.Object;
 
     if (activeTool === 'arrow') {
       shape = createArrow(x1, y1, x2, y2, {
@@ -54,7 +54,7 @@ export function useDrawingMode(canvas: FabricCanvas | null) {
         borderWidth: currentStyles.borderWidth,
       });
     } else {
-      shape = new Line([x1, y1, x2, y2], {
+      shape = new fabric.Line([x1, y1, x2, y2], {
         stroke: currentStyles.borderColor,
         strokeWidth: currentStyles.borderWidth,
       });
@@ -62,8 +62,8 @@ export function useDrawingMode(canvas: FabricCanvas | null) {
 
     // Set ID and type
     const id = generateShapeId();
-    (shape as FabricObject & { id: string }).id = id;
-    (shape as FabricObject & { shapeType: ShapeType }).shapeType = activeTool as ShapeType;
+    (shape as fabric.Object & { id: string }).id = id;
+    (shape as fabric.Object & { shapeType: ShapeType }).shapeType = activeTool as ShapeType;
 
     // Apply selection styling
     shape.set({
@@ -88,10 +88,9 @@ export function useDrawingMode(canvas: FabricCanvas | null) {
   useEffect(() => {
     if (!canvas || !isLineMode) return;
 
-    const handleMouseDown = (e: { pointer?: { x: number; y: number }; e?: MouseEvent }) => {
+    const handleMouseDown = (e: fabric.IEvent<MouseEvent>) => {
       // Don't start drawing if clicking on an existing object
-      const target = canvas.findTarget(e.e as MouseEvent);
-      if (target && !(target as FabricObject & { gridLine?: boolean }).gridLine) {
+      if (e.target && !(e.target as fabric.Object & { gridLine?: boolean }).gridLine) {
         return;
       }
 
@@ -113,10 +112,10 @@ export function useDrawingMode(canvas: FabricCanvas | null) {
       canvas.renderAll();
     };
 
-    canvas.on('mouse:down', handleMouseDown);
+    canvas.on('mouse:down', handleMouseDown as (e: fabric.IEvent<Event>) => void);
 
     return () => {
-      canvas.off('mouse:down', handleMouseDown);
+      canvas.off('mouse:down', handleMouseDown as (e: fabric.IEvent<Event>) => void);
     };
   }, [canvas, isLineMode, createPreview, setIsDrawing]);
 
@@ -177,7 +176,7 @@ export function useDrawingMode(canvas: FabricCanvas | null) {
         canvas.renderAll();
 
         // Update selection to new shape
-        const id = (shape as FabricObject & { id: string }).id;
+        const id = (shape as fabric.Object & { id: string }).id;
         setSelectedIds([id]);
       }
 

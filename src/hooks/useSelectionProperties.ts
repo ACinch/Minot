@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Canvas as FabricCanvas, Object as FabricObject, IText, ActiveSelection } from 'fabric';
+import { fabric } from 'fabric';
 import { useCanvas } from '../context/CanvasContext';
 import { useInteractionStore } from '../store/interactionStore';
 import type { ShapeStyles } from '../types';
@@ -30,7 +30,7 @@ const DEFAULT_SELECTION_PROPERTIES: SelectionProperties = {
 /**
  * Gets a property value from multiple objects, returning 'mixed' if values differ
  */
-function getPropertyValue<T>(objects: FabricObject[], getter: (obj: FabricObject) => T): T | 'mixed' {
+function getPropertyValue<T>(objects: fabric.Object[], getter: (obj: fabric.Object) => T): T | 'mixed' {
   if (objects.length === 0) return 'mixed';
 
   const firstValue = getter(objects[0]);
@@ -42,7 +42,7 @@ function getPropertyValue<T>(objects: FabricObject[], getter: (obj: FabricObject
 /**
  * Hook to read and update properties of selected shapes
  */
-export function useSelectionProperties(canvas: FabricCanvas | null) {
+export function useSelectionProperties(canvas: fabric.Canvas | null) {
   const { selectedIds, currentStyles, setCurrentStyles } = useInteractionStore();
   const [properties, setProperties] = useState<SelectionProperties>(DEFAULT_SELECTION_PROPERTIES);
 
@@ -69,14 +69,14 @@ export function useSelectionProperties(canvas: FabricCanvas | null) {
       return;
     }
 
-    let objects: FabricObject[];
-    if (activeObject instanceof ActiveSelection) {
+    let objects: fabric.Object[];
+    if (activeObject instanceof fabric.ActiveSelection) {
       objects = activeObject.getObjects();
     } else {
       objects = [activeObject];
     }
 
-    const hasTextSelection = objects.some((obj) => obj instanceof IText);
+    const hasTextSelection = objects.some((obj) => obj instanceof fabric.IText);
 
     setProperties({
       borderColor: getPropertyValue(objects, (obj) => obj.stroke as string) || DEFAULT_STYLES.borderColor,
@@ -84,20 +84,20 @@ export function useSelectionProperties(canvas: FabricCanvas | null) {
       backgroundColor: getPropertyValue(objects, (obj) => obj.fill as string) || DEFAULT_STYLES.backgroundColor,
       fontFamily: hasTextSelection
         ? getPropertyValue(
-            objects.filter((obj) => obj instanceof IText),
-            (obj) => (obj as IText).fontFamily
+            objects.filter((obj) => obj instanceof fabric.IText),
+            (obj) => (obj as fabric.IText).fontFamily
           ) || 'Arial'
         : currentStyles.fontFamily || 'Arial',
       fontSize: hasTextSelection
         ? getPropertyValue(
-            objects.filter((obj) => obj instanceof IText),
-            (obj) => (obj as IText).fontSize
+            objects.filter((obj) => obj instanceof fabric.IText),
+            (obj) => (obj as fabric.IText).fontSize
           ) ?? 16
         : currentStyles.fontSize || 16,
       fontColor: hasTextSelection
         ? getPropertyValue(
-            objects.filter((obj) => obj instanceof IText),
-            (obj) => (obj as IText).fill as string
+            objects.filter((obj) => obj instanceof fabric.IText),
+            (obj) => (obj as fabric.IText).fill as string
           ) || '#000000'
         : currentStyles.fontColor || '#000000',
       hasSelection: true,
@@ -113,7 +113,7 @@ export function useSelectionProperties(canvas: FabricCanvas | null) {
     const activeObject = canvas.getActiveObject();
     if (!activeObject) return;
 
-    if (activeObject instanceof ActiveSelection) {
+    if (activeObject instanceof fabric.ActiveSelection) {
       activeObject.forEachObject((obj) => obj.set('stroke', color));
     } else {
       activeObject.set('stroke', color);
@@ -129,7 +129,7 @@ export function useSelectionProperties(canvas: FabricCanvas | null) {
     const activeObject = canvas.getActiveObject();
     if (!activeObject) return;
 
-    if (activeObject instanceof ActiveSelection) {
+    if (activeObject instanceof fabric.ActiveSelection) {
       activeObject.forEachObject((obj) => obj.set('strokeWidth', width));
     } else {
       activeObject.set('strokeWidth', width);
@@ -145,14 +145,14 @@ export function useSelectionProperties(canvas: FabricCanvas | null) {
     const activeObject = canvas.getActiveObject();
     if (!activeObject) return;
 
-    if (activeObject instanceof ActiveSelection) {
+    if (activeObject instanceof fabric.ActiveSelection) {
       activeObject.forEachObject((obj) => {
         // Don't set fill on lines
-        if (!(obj instanceof IText)) {
+        if (!(obj instanceof fabric.IText)) {
           obj.set('fill', color);
         }
       });
-    } else if (!(activeObject instanceof IText)) {
+    } else if (!(activeObject instanceof fabric.IText)) {
       activeObject.set('fill', color);
     }
     canvas.renderAll();
@@ -166,13 +166,13 @@ export function useSelectionProperties(canvas: FabricCanvas | null) {
     const activeObject = canvas.getActiveObject();
     if (!activeObject) return;
 
-    if (activeObject instanceof ActiveSelection) {
+    if (activeObject instanceof fabric.ActiveSelection) {
       activeObject.forEachObject((obj) => {
-        if (obj instanceof IText) {
+        if (obj instanceof fabric.IText) {
           obj.set('fontFamily', font);
         }
       });
-    } else if (activeObject instanceof IText) {
+    } else if (activeObject instanceof fabric.IText) {
       activeObject.set('fontFamily', font);
     }
     canvas.renderAll();
@@ -186,13 +186,13 @@ export function useSelectionProperties(canvas: FabricCanvas | null) {
     const activeObject = canvas.getActiveObject();
     if (!activeObject) return;
 
-    if (activeObject instanceof ActiveSelection) {
+    if (activeObject instanceof fabric.ActiveSelection) {
       activeObject.forEachObject((obj) => {
-        if (obj instanceof IText) {
+        if (obj instanceof fabric.IText) {
           obj.set('fontSize', size);
         }
       });
-    } else if (activeObject instanceof IText) {
+    } else if (activeObject instanceof fabric.IText) {
       activeObject.set('fontSize', size);
     }
     canvas.renderAll();
@@ -206,13 +206,13 @@ export function useSelectionProperties(canvas: FabricCanvas | null) {
     const activeObject = canvas.getActiveObject();
     if (!activeObject) return;
 
-    if (activeObject instanceof ActiveSelection) {
+    if (activeObject instanceof fabric.ActiveSelection) {
       activeObject.forEachObject((obj) => {
-        if (obj instanceof IText) {
+        if (obj instanceof fabric.IText) {
           obj.set('fill', color);
         }
       });
-    } else if (activeObject instanceof IText) {
+    } else if (activeObject instanceof fabric.IText) {
       activeObject.set('fill', color);
     }
     canvas.renderAll();

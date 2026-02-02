@@ -1,13 +1,4 @@
-import {
-  Object as FabricObject,
-  Rect,
-  Circle,
-  Triangle,
-  Line,
-  IText,
-  Image as FabricImage,
-  Canvas as FabricCanvas,
-} from 'fabric';
+import { fabric } from 'fabric';
 import type { ShapeData, ShapeType, CatalogItem, ShapeStyles } from '../types';
 import { DEFAULT_STYLES } from '../types';
 import { createArrow } from './arrow';
@@ -18,38 +9,38 @@ export function generateShapeId(): string {
 }
 
 // Extract styles from a Fabric object
-function extractStyles(obj: FabricObject): ShapeStyles {
+function extractStyles(obj: fabric.Object): ShapeStyles {
   return {
     borderColor: (obj.stroke as string) || DEFAULT_STYLES.borderColor,
     borderWidth: obj.strokeWidth || DEFAULT_STYLES.borderWidth,
     backgroundColor: (obj.fill as string) || DEFAULT_STYLES.backgroundColor,
-    fontFamily: (obj as IText).fontFamily || DEFAULT_STYLES.fontFamily,
-    fontSize: (obj as IText).fontSize || DEFAULT_STYLES.fontSize,
-    fontColor: ((obj as IText).fill as string) || DEFAULT_STYLES.fontColor,
+    fontFamily: (obj as fabric.IText).fontFamily || DEFAULT_STYLES.fontFamily,
+    fontSize: (obj as fabric.IText).fontSize || DEFAULT_STYLES.fontSize,
+    fontColor: ((obj as fabric.IText).fill as string) || DEFAULT_STYLES.fontColor,
   };
 }
 
 // Determine shape type from Fabric object
-function getShapeType(obj: FabricObject): ShapeType {
+function getShapeType(obj: fabric.Object): ShapeType {
   // Check for custom type first (for arrows, etc.)
-  if ((obj as FabricObject & { shapeType?: ShapeType }).shapeType) {
-    return (obj as FabricObject & { shapeType?: ShapeType }).shapeType!;
+  if ((obj as fabric.Object & { shapeType?: ShapeType }).shapeType) {
+    return (obj as fabric.Object & { shapeType?: ShapeType }).shapeType!;
   }
 
-  if (obj instanceof Rect) return 'rectangle';
-  if (obj instanceof Circle) return 'circle';
-  if (obj instanceof Triangle) return 'triangle';
-  if (obj instanceof Line) return 'line';
-  if (obj instanceof IText) return 'text';
-  if (obj instanceof FabricImage) return 'image';
+  if (obj instanceof fabric.Rect) return 'rectangle';
+  if (obj instanceof fabric.Circle) return 'circle';
+  if (obj instanceof fabric.Triangle) return 'triangle';
+  if (obj instanceof fabric.Line) return 'line';
+  if (obj instanceof fabric.IText) return 'text';
+  if (obj instanceof fabric.Image) return 'image';
 
   return 'rectangle'; // Default fallback
 }
 
 // Convert Fabric object to serializable data
-export function shapeToData(obj: FabricObject): ShapeData {
+export function shapeToData(obj: fabric.Object): ShapeData {
   const type = getShapeType(obj);
-  const id = (obj as FabricObject & { id?: string }).id || generateShapeId();
+  const id = (obj as fabric.Object & { id?: string }).id || generateShapeId();
 
   const baseData: ShapeData = {
     id,
@@ -65,32 +56,32 @@ export function shapeToData(obj: FabricObject): ShapeData {
   // Add type-specific properties
   switch (type) {
     case 'rectangle':
-      baseData.width = (obj as Rect).width;
-      baseData.height = (obj as Rect).height;
+      baseData.width = (obj as fabric.Rect).width;
+      baseData.height = (obj as fabric.Rect).height;
       break;
     case 'circle':
-      baseData.radius = (obj as Circle).radius;
+      baseData.radius = (obj as fabric.Circle).radius;
       break;
     case 'triangle':
-      baseData.width = (obj as Triangle).width;
-      baseData.height = (obj as Triangle).height;
+      baseData.width = (obj as fabric.Triangle).width;
+      baseData.height = (obj as fabric.Triangle).height;
       break;
     case 'line':
     case 'arrow':
-      const line = obj as Line;
+      const line = obj as fabric.Line;
       baseData.points = [
         { x: line.x1 || 0, y: line.y1 || 0 },
         { x: line.x2 || 0, y: line.y2 || 0 },
       ];
       break;
     case 'text':
-      baseData.text = (obj as IText).text;
-      baseData.width = (obj as IText).width;
+      baseData.text = (obj as fabric.IText).text;
+      baseData.width = (obj as fabric.IText).width;
       break;
     case 'image':
-      baseData.src = (obj as FabricImage).getSrc();
-      baseData.width = (obj as FabricImage).width;
-      baseData.height = (obj as FabricImage).height;
+      baseData.src = (obj as fabric.Image).getSrc();
+      baseData.width = (obj as fabric.Image).width;
+      baseData.height = (obj as fabric.Image).height;
       break;
   }
 
@@ -101,11 +92,11 @@ export function shapeToData(obj: FabricObject): ShapeData {
 export function dataToShape(
   data: ShapeData,
   catalogItem?: CatalogItem
-): FabricObject | null {
+): fabric.Object | null {
   // Use custom factory if provided
   if (catalogItem?.factory) {
-    const obj = catalogItem.factory({} as FabricCanvas, data);
-    (obj as FabricObject & { id: string }).id = data.id;
+    const obj = catalogItem.factory({} as fabric.Canvas, data);
+    (obj as fabric.Object & { id: string }).id = data.id;
     return obj;
   }
 
@@ -120,11 +111,11 @@ export function dataToShape(
     fill: data.styles.backgroundColor,
   };
 
-  let fabricObject: FabricObject | null = null;
+  let fabricObject: fabric.Object | null = null;
 
   switch (data.type) {
     case 'rectangle':
-      fabricObject = new Rect({
+      fabricObject = new fabric.Rect({
         ...commonOptions,
         width: data.width || 100,
         height: data.height || 100,
@@ -132,14 +123,14 @@ export function dataToShape(
       break;
 
     case 'circle':
-      fabricObject = new Circle({
+      fabricObject = new fabric.Circle({
         ...commonOptions,
         radius: data.radius || 50,
       });
       break;
 
     case 'triangle':
-      fabricObject = new Triangle({
+      fabricObject = new fabric.Triangle({
         ...commonOptions,
         width: data.width || 100,
         height: data.height || 100,
@@ -148,7 +139,7 @@ export function dataToShape(
 
     case 'line':
       if (data.points && data.points.length >= 2) {
-        fabricObject = new Line(
+        fabricObject = new fabric.Line(
           [data.points[0].x, data.points[0].y, data.points[1].x, data.points[1].y],
           {
             ...commonOptions,
@@ -171,7 +162,7 @@ export function dataToShape(
       break;
 
     case 'text':
-      fabricObject = new IText(data.text || 'Text', {
+      fabricObject = new fabric.IText(data.text || 'Text', {
         ...commonOptions,
         fill: data.styles.fontColor,
         fontFamily: data.styles.fontFamily,
@@ -184,15 +175,15 @@ export function dataToShape(
       // The actual loading should be handled by the consumer
       if (data.src) {
         // For now, we'll skip image loading in this synchronous function
-        // A proper implementation would use FabricImage.fromURL
+        // A proper implementation would use fabric.Image.fromURL
         console.warn('Image loading requires async handling');
       }
       break;
   }
 
   if (fabricObject) {
-    (fabricObject as FabricObject & { id: string }).id = data.id;
-    (fabricObject as FabricObject & { shapeType: ShapeType }).shapeType = data.type;
+    (fabricObject as fabric.Object & { id: string }).id = data.id;
+    (fabricObject as fabric.Object & { shapeType: ShapeType }).shapeType = data.type;
   }
 
   return fabricObject;

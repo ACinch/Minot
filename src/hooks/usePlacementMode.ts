@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useRef } from 'react';
-import { Canvas as FabricCanvas, Rect, Circle, Triangle, Line, IText, Object as FabricObject } from 'fabric';
+import { fabric } from 'fabric';
 import { useCanvas } from '../context/CanvasContext';
 import { useInteractionStore } from '../store/interactionStore';
 import type { ShapeType } from '../types';
@@ -10,7 +10,7 @@ const GHOST_OPACITY = 0.25;
 /**
  * Creates a ghost (preview) shape for placement mode
  */
-function createGhostShape(type: ShapeType, styles: { borderColor: string; backgroundColor: string; borderWidth: number }): FabricObject | null {
+function createGhostShape(type: ShapeType, styles: { borderColor: string; backgroundColor: string; borderWidth: number }): fabric.Object | null {
   const commonOptions = {
     originX: 'center' as const,
     originY: 'center' as const,
@@ -24,18 +24,18 @@ function createGhostShape(type: ShapeType, styles: { borderColor: string; backgr
 
   switch (type) {
     case 'rectangle':
-      return new Rect({ ...commonOptions, width: 100, height: 80 });
+      return new fabric.Rect({ ...commonOptions, width: 100, height: 80 });
     case 'circle':
-      return new Circle({ ...commonOptions, radius: 50 });
+      return new fabric.Circle({ ...commonOptions, radius: 50 });
     case 'triangle':
-      return new Triangle({ ...commonOptions, width: 100, height: 100 });
+      return new fabric.Triangle({ ...commonOptions, width: 100, height: 100 });
     case 'line':
-      return new Line([0, 0, 100, 0], { ...commonOptions, fill: undefined });
+      return new fabric.Line([0, 0, 100, 0], { ...commonOptions, fill: undefined });
     case 'arrow':
       // Simplified arrow preview - just a line
-      return new Line([0, 0, 100, 0], { ...commonOptions, fill: undefined });
+      return new fabric.Line([0, 0, 100, 0], { ...commonOptions, fill: undefined });
     case 'text':
-      return new IText('Text', {
+      return new fabric.IText('Text', {
         ...commonOptions,
         fontSize: 16,
         fontFamily: 'Arial',
@@ -45,9 +45,9 @@ function createGhostShape(type: ShapeType, styles: { borderColor: string; backgr
   }
 }
 
-export function usePlacementMode(canvas: FabricCanvas | null) {
+export function usePlacementMode(canvas: fabric.Canvas | null) {
   const { placementShape, setPlacementShape, currentStyles, setActiveTool, setSelectedIds } = useInteractionStore();
-  const ghostRef = useRef<FabricObject | null>(null);
+  const ghostRef = useRef<fabric.Object | null>(null);
 
   // Create/remove ghost shape when placement mode changes
   useEffect(() => {
@@ -111,7 +111,7 @@ export function usePlacementMode(canvas: FabricCanvas | null) {
       const ghost = ghostRef.current;
 
       // Clone the ghost but make it a real shape
-      ghost.clone((cloned: FabricObject) => {
+      ghost.clone((cloned: fabric.Object) => {
         cloned.set({
           opacity: 1,
           selectable: true,
@@ -121,15 +121,15 @@ export function usePlacementMode(canvas: FabricCanvas | null) {
         });
 
         // Add ID and type
-        (cloned as FabricObject & { id: string }).id = generateShapeId();
-        (cloned as FabricObject & { shapeType: ShapeType }).shapeType = placementShape;
+        (cloned as fabric.Object & { id: string }).id = generateShapeId();
+        (cloned as fabric.Object & { shapeType: ShapeType }).shapeType = placementShape;
 
         canvas.add(cloned);
         canvas.setActiveObject(cloned);
         canvas.renderAll();
 
         // Update selection in store
-        const id = (cloned as FabricObject & { id: string }).id;
+        const id = (cloned as fabric.Object & { id: string }).id;
         setSelectedIds([id]);
       });
 

@@ -1,4 +1,4 @@
-import type { Canvas as FabricCanvas, Object as FabricObject } from 'fabric';
+import type { fabric } from 'fabric';
 
 // Shape types supported by the library
 export type ShapeType = 'rectangle' | 'circle' | 'triangle' | 'line' | 'arrow' | 'text' | 'image';
@@ -48,7 +48,7 @@ export interface CatalogItem {
   icon?: React.ReactNode;
   defaultStyles?: Partial<ShapeStyles>;
   // Custom factory for complex shapes
-  factory?: (canvas: FabricCanvas, options: Partial<ShapeData>) => FabricObject;
+  factory?: (canvas: fabric.Canvas, options: Partial<ShapeData>) => fabric.Object;
 }
 
 // Component catalog configuration
@@ -84,7 +84,7 @@ export interface HistoryAction {
 
 // Canvas context value
 export interface CanvasContextValue {
-  canvas: FabricCanvas | null;
+  canvas: fabric.Canvas | null;
   canvasRef: React.RefObject<HTMLCanvasElement>;
   catalog: ComponentCatalog;
   // Data operations
