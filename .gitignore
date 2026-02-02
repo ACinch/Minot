@@ -28,6 +28,7 @@ pnpm-debug.log*
 .env
 .env.local
 .env.*.local
+.claude/
 
 # Lock files (keep pnpm-lock.yaml)
 package-lock.json
