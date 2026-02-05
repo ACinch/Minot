@@ -1,7 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "WebSearch",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm build:*)",
+      "Bash(npm pack:*)",
+      "Bash(pnpm dev)",
+      "Bash(timeout /t 5 /nobreak)",
+      "Bash(curl:*)",
+      "Bash(npx tsc:*)",
+      "Bash(ping:*)",
+      "Bash(pnpm prepublishOnly:*)"
     ]
   }
 }

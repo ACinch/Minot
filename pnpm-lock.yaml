@@ -93,18 +93,15 @@ importers:
 
   demo:
     dependencies:
-      fabric:
-        specifier: ^5.3.0
-        version: 5.5.2
+      minot:
+        specifier: file:../minot-0.1.0.tgz
+        version: file:minot-0.1.0.tgz(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.2.0
         version: 18.3.1
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
-      zustand:
-        specifier: ^4.5.0
-        version: 4.5.7(@types/react@18.3.27)(react@18.3.1)
     devDependencies:
       '@types/react':
         specifier: ^18.2.0
@@ -2196,6 +2193,13 @@ packages:
   minizlib@2.1.2:
     resolution: {integrity: sha512-bAxsR8BVfj60DWXHE3u30oHzfl4G7khkSuPW+qvpd7jFRHm7dLxOjUk1EHACJ/hxLY8phGJ0YhYHZo7jil7Qdg==}
     engines: {node: '>= 8'}
+
+  minot@file:minot-0.1.0.tgz:
+    resolution: {integrity: sha512-hCaNopd55Sb6DPA2E75lrT2lQbqBNijKFhm4dUAG1n01faBcrvBOvKy4BeasF+qpo4kmyTHKMpQuKEw+S8ZZCg==, tarball: file:minot-0.1.0.tgz}
+    version: 0.1.0
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
 
   mkdirp@1.0.4:
     resolution: {integrity: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==}
@@ -5650,6 +5654,20 @@ snapshots:
       minipass: 3.3.6
       yallist: 4.0.0
     optional: true
+
+  minot@file:minot-0.1.0.tgz(@types/react@18.3.27)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      fabric: 5.5.2
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      zustand: 4.5.7(@types/react@18.3.27)(react@18.3.1)
+    transitivePeerDependencies:
+      - '@types/react'
+      - bufferutil
+      - encoding
+      - immer
+      - supports-color
+      - utf-8-validate
 
   mkdirp@1.0.4:
     optional: true

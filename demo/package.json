@@ -4,15 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "vite --config vite.config.source.ts",
+    "dev:package": "vite",
+    "build": "tsc -p tsconfig.source.json && vite build --config vite.config.source.ts",
+    "build:package": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "minot": "file:../minot-0.1.0.tgz",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "fabric": "^5.3.0",
-    "zustand": "^4.5.0"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
